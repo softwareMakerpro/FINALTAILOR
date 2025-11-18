@@ -50,7 +50,29 @@ function saveClientToDB(client) {
         return null;
     }
 }
+// Add these functions to your existing db.js file
 
+function getOrdersFromDB() {
+    try {
+        return JSON.parse(localStorage.getItem('orders')) || [];
+    } catch (error) {
+        console.error('Error reading orders:', error);
+        return [];
+    }
+}
+
+function saveOrderToDB(order) {
+    try {
+        const orders = getOrdersFromDB();
+        const existingIndex = orders.findIndex(o => o.id === order.id);
+        
+        if (existingIndex !== -1) {
+            orders[existingIndex] = order;
+        } else {
+            orders.push(order);
+        }
+        
+        localStorage.setItem
 function getClientById(clientId) {
     const clients = getClientsFromDB();
     return clients.find(client => client.id === clientId);
