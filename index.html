@@ -3,13 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JAMAL AL-SHUWAIKH - Tailor Management System</title>
+    <title>JAMAL AL-SHUWAIKH - Futuristic Dashboard</title>
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
-    <header class="top-header">
+    <div class="animated-bg"></div>
+    
+    <!-- Glowing Header -->
+    <header class="glow-header">
         <div class="header-content">
             <div class="shop-branding">
                 <h1>JAMAL AL-SHUWAIKH</h1>
@@ -23,612 +26,428 @@
         </div>
     </header>
 
-    <div class="quick-actions-bar">
-        <div class="actions-container">
-            <button class="action-btn" onclick="showSection('clients')">👥 Clients</button>
-            <button class="action-btn" onclick="showSection('orders')">📦 Orders</button>
-            <button class="action-btn" onclick="showSection('invoices')">🧾 Invoices</button>
-            <button class="action-btn" onclick="showSection('expenses')">💸 Expenses</button>
-            <button class="action-btn" onclick="downloadBackup()">💾 Backup</button>
+    <!-- Three Column Dashboard -->
+    <div class="dashboard-container">
+        <!-- Column 1: Client Management -->
+        <div class="glass-card">
+            <h2 class="section-title">
+                <span>👥</span> Add New Client
+            </h2>
+            
+            <form id="clientForm">
+                <div class="form-group">
+                    <label>Full Name *</label>
+                    <input type="text" class="form-input" id="clientName" required placeholder="Enter client name">
+                </div>
+                
+                <div class="form-group">
+                    <label>Phone Number *</label>
+                    <input type="tel" class="form-input" id="clientPhone" required placeholder="Enter phone number">
+                </div>
+                
+                <div class="form-group">
+                    <label>Book Number *</label>
+                    <input type="text" class="form-input" id="clientBookNo" required placeholder="Enter book number">
+                </div>
+
+                <div class="form-group">
+                    <label>Body Measurements (Optional)</label>
+                    <div class="measurements-grid">
+                        <input type="number" class="measurement-input" placeholder="Chest" step="0.1">
+                        <input type="number" class="measurement-input" placeholder="Waist" step="0.1">
+                        <input type="number" class="measurement-input" placeholder="Length" step="0.1">
+                        <input type="number" class="measurement-input" placeholder="Sleeve" step="0.1">
+                        <input type="number" class="measurement-input" placeholder="Shoulder" step="0.1">
+                        <input type="number" class="measurement-input" placeholder="Neck" step="0.1">
+                        <input type="number" class="measurement-input" placeholder="Hips" step="0.1">
+                        <input type="number" class="measurement-input" placeholder="Armhole" step="0.1">
+                        <input type="number" class="measurement-input" placeholder="Bicep" step="0.1">
+                        <input type="number" class="measurement-input" placeholder="Wrist" step="0.1">
+                    </div>
+                </div>
+
+                <button type="button" class="btn btn-primary" onclick="saveClient()">
+                    <span>💾</span> Save Client
+                </button>
+            </form>
+
+            <!-- Quick Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-icon">👥</span>
+                    <div class="stat-number" id="totalClients">0</div>
+                    <div class="stat-label">Total Clients</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-icon">📦</span>
+                    <div class="stat-number" id="activeOrders">0</div>
+                    <div class="stat-label">Active Orders</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Column 2: Order Management -->
+        <div class="glass-card">
+            <h2 class="section-title">
+                <span>📦</span> Order Management
+            </h2>
+            
+            <div class="quick-actions">
+                <div class="action-btn" onclick="createNewOrder()">
+                    <span class="action-icon">➕</span>
+                    <div class="action-text">New Order</div>
+                </div>
+                <div class="action-btn" onclick="showAllOrders()">
+                    <span class="action-icon">📋</span>
+                    <div class="action-text">View Orders</div>
+                </div>
+                <div class="action-btn" onclick="showPendingOrders()">
+                    <span class="action-icon">⏳</span>
+                    <div class="action-text">Pending</div>
+                </div>
+                <div class="action-btn" onclick="showCompletedOrders()">
+                    <span class="action-icon">✅</span>
+                    <div class="action-text">Completed</div>
+                </div>
+            </div>
+
+            <!-- Order Status Overview -->
+            <div class="stats-grid" style="margin-top: 25px;">
+                <div class="stat-card">
+                    <span class="stat-icon">📥</span>
+                    <div class="stat-number" id="receivedOrders">0</div>
+                    <div class="stat-label">Received</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-icon">⚙️</span>
+                    <div class="stat-number" id="processOrders">0</div>
+                    <div class="stat-label">In Process</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-icon">⏳</span>
+                    <div class="stat-number" id="pendingOrders">0</div>
+                    <div class="stat-label">Pending</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-icon">✅</span>
+                    <div class="stat-number" id="completedOrders">0</div>
+                    <div class="stat-label">Completed</div>
+                </div>
+            </div>
+
+            <!-- Recent Orders -->
+            <h3 style="margin: 25px 0 15px 0; color: var(--light); font-size: 1.1rem;">Recent Orders</h3>
+            <div class="activity-list" id="recentOrders">
+                <div class="activity-item">
+                    <span class="activity-icon">📦</span>
+                    <div class="activity-content">
+                        <div class="activity-title">No orders yet</div>
+                        <div class="activity-time">Create your first order</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Column 3: Business Management -->
+        <div class="glass-card">
+            <h2 class="section-title">
+                <span>💼</span> Business Management
+            </h2>
+            
+            <div class="quick-actions">
+                <div class="action-btn" onclick="createInvoice()">
+                    <span class="action-icon">🧾</span>
+                    <div class="action-text">Create Invoice</div>
+                </div>
+                <div class="action-btn" onclick="manageEmployees()">
+                    <span class="action-icon">👨‍💼</span>
+                    <div class="action-text">Employees</div>
+                </div>
+                <div class="action-btn" onclick="manageSalary()">
+                    <span class="action-icon">💰</span>
+                    <div class="action-text">Salary</div>
+                </div>
+                <div class="action-btn" onclick="manageExpenses()">
+                    <span class="action-icon">💸</span>
+                    <div class="action-text">Expenses</div>
+                </div>
+            </div>
+
+            <!-- Financial Overview -->
+            <div class="stats-grid" style="margin-top: 25px;">
+                <div class="stat-card">
+                    <span class="stat-icon">💰</span>
+                    <div class="stat-number" id="totalRevenue">0</div>
+                    <div class="stat-label">Revenue</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-icon">💸</span>
+                    <div class="stat-number" id="totalExpenses">0</div>
+                    <div class="stat-label">Expenses</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-icon">📊</span>
+                    <div class="stat-number" id="netProfit">0</div>
+                    <div class="stat-label">Net Profit</div>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-icon">🎯</span>
+                    <div class="stat-number" id="completionRate">0%</div>
+                    <div class="stat-label">Completion</div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div style="margin-top: 25px;">
+                <button class="btn btn-success" onclick="generateReport()" style="margin-bottom: 10px;">
+                    <span>📈</span> Generate Report
+                </button>
+                <button class="btn btn-warning" onclick="backupData()">
+                    <span>💾</span> Backup Data
+                </button>
+            </div>
+
+            <!-- Recent Activity -->
+            <h3 style="margin: 25px 0 15px 0; color: var(--light); font-size: 1.1rem;">Recent Activity</h3>
+            <div class="activity-list" id="recentActivity">
+                <div class="activity-item">
+                    <span class="activity-icon">👋</span>
+                    <div class="activity-content">
+                        <div class="activity-title">Welcome to your dashboard!</div>
+                        <div class="activity-time">Just now</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-
-    <main class="main-content">
-        <section class="forms-section">
-            <h2 id="formsTitle">👥 Add New Client</h2>
-            
-            <div id="clientFormSection">
-                <form id="clientForm">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Full Name *</label>
-                            <input type="text" id="clientName" required placeholder="Enter client name">
-                        </div>
-                        <div class="form-group">
-                            <label>Phone Number *</label>
-                            <input type="tel" id="clientPhone" required placeholder="Enter phone number">
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Book Number *</label>
-                        <input type="text" id="clientBookNo" required placeholder="Enter book number">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Basic Measurements</label>
-                        <div class="measurements-grid">
-                            <input type="number" id="measureChest" placeholder="Chest (cm)" step="0.1">
-                            <input type="number" id="measureWaist" placeholder="Waist (cm)" step="0.1">
-                            <input type="number" id="measureLength" placeholder="Length (cm)" step="0.1">
-                            <input type="number" id="measureSleeve" placeholder="Sleeve (cm)" step="0.1">
-                        </div>
-                    </div>
-
-                    <button type="button" class="btn-primary" onclick="saveClient()">💾 Save Client</button>
-                </form>
-            </div>
-
-            <div id="orderFormSection" style="display: none;">
-                <form id="orderForm">
-                    <div class="search-container">
-                        <input type="text" id="orderClientSearch" placeholder="🔍 Search client by name, phone, or book number..." 
-                               onkeyup="searchOrderClients()">
-                        <div id="orderClientResults" class="search-results"></div>
-                    </div>
-
-                    <div id="selectedOrderClient" class="client-info-display" style="display: none; margin-bottom: 20px;">
-                        <div class="client-details-card">
-                            <h4 id="selectedOrderClientName"></h4>
-                            <p>📞 <span id="selectedOrderClientPhone"></span></p>
-                            <p>📖 Book No: <span id="selectedOrderClientBookNo"></span></p>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Order Number *</label>
-                            <input type="text" id="orderNumber" required value="ORD-${Date.now().toString().slice(-6)}">
-                        </div>
-                        <div class="form-group">
-                            <label>Order Date *</label>
-                            <input type="date" id="orderDate" required>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Garment Type *</label>
-                        <select id="orderGarmentType" required>
-                            <option value="">-- Select Garment --</option>
-                            <option value="thobe">Thobe/Dishdasha</option>
-                            <option value="suit">Suit</option>
-                            <option value="shirt">Shirt</option>
-                            <option value="pants">Pants</option>
-                            <option value="jacket">Jacket</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Description *</label>
-                        <textarea id="orderDescription" required rows="2" placeholder="Order details..."></textarea>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Price (KWD) *</label>
-                            <input type="number" id="orderPrice" required step="0.001" min="0">
-                        </div>
-                        <div class="form-group">
-                            <label>Status</label>
-                            <select id="orderStatus">
-                                <option value="received">📥 Received</option>
-                                <option value="process">⚙️ In Process</option>
-                                <option value="pending">⏳ Pending</option>
-                                <option value="completed">✅ Completed</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <button type="button" class="btn-primary" onclick="saveOrder()">💾 Save Order</button>
-                </form>
-            </div>
-
-            <div id="invoiceFormSection" style="display: none;">
-                <form id="invoiceForm">
-                    <div class="search-container">
-                        <input type="text" id="invoiceClientSearch" placeholder="🔍 Search client by name, phone, or book number..." 
-                               onkeyup="searchInvoiceClients()">
-                        <div id="invoiceClientResults" class="search-results"></div>
-                    </div>
-
-                    <div id="selectedInvoiceClient" class="client-info-display" style="display: none; margin-bottom: 20px;">
-                        <div class="client-details-card">
-                            <h4 id="selectedInvoiceClientName"></h4>
-                            <p>📞 <span id="selectedInvoiceClientPhone"></span></p>
-                            <p>📖 Book No: <span id="selectedInvoiceClientBookNo"></span></p>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Invoice Items</label>
-                        <div id="invoiceItems">
-                            <div class="form-row" style="grid-template-columns: 2fr 1fr 1fr auto; align-items: end; gap: 10px; margin-bottom: 10px;">
-                                <input type="text" placeholder="Item description" class="invoice-item-name" required>
-                                <input type="number" placeholder="Qty" value="1" class="invoice-item-qty" min="1" required>
-                                <input type="number" placeholder="Price (KWD)" class="invoice-item-price" step="0.001" min="0" required>
-                                <button type="button" class="btn-danger" onclick="removeInvoiceItem(this)" style="padding: 8px 12px;">🗑️</button>
-                            </div>
-                        </div>
-                        <button type="button" class="btn-outline" onclick="addInvoiceItem()" style="margin-top: 10px;">+ Add Item</button>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Discount (KWD)</label>
-                            <input type="number" id="invoiceDiscount" value="0" step="0.001" min="0">
-                        </div>
-                        <div class="form-group">
-                            <label>Tax (KWD)</label>
-                            <input type="number" id="invoiceTax" value="0" step="0.001" min="0">
-                        </div>
-                    </div>
-
-                    <button type="button" class="btn-primary" onclick="createInvoice()">🧾 Create Invoice</button>
-                </form>
-            </div>
-
-            <div id="expenseFormSection" style="display: none;">
-                <form id="expenseForm">
-                    <div class="form-group">
-                        <label>Expense Type *</label>
-                        <select id="expenseType" required>
-                            <option value="">-- Select Type --</option>
-                            <option value="material">🧵 Material</option>
-                            <option value="salary">👥 Salary</option>
-                            <option value="rent">🏪 Rent</option>
-                            <option value="utility">⚡ Utility</option>
-                            <option value="other">📦 Other</option>
-                        </select>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Amount (KWD) *</label>
-                            <input type="number" id="expenseAmount" required step="0.001" min="0">
-                        </div>
-                        <div class="form-group">
-                            <label>Date *</label>
-                            <input type="date" id="expenseDate" required>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Description</label>
-                        <textarea id="expenseDescription" rows="2" placeholder="Expense details..."></textarea>
-                    </div>
-
-                    <button type="button" class="btn-primary" onclick="saveExpense()">💾 Save Expense</button>
-                </form>
-            </div>
-        </section>
-
-        <section class="data-section">
-            <h2 id="dataTitle">👥 Clients List</h2>
-            
-            <div class="search-container">
-                <input type="text" id="dataSearch" placeholder="🔍 Search by name, phone, book number..." onkeyup="searchData()">
-            </div>
-
-            <div class="data-tabs">
-                <button class="tab-btn active" onclick="showDataTab('clients')">👥 Clients</button>
-                <button class="tab-btn" onclick="showDataTab('orders')">📦 Orders</button>
-                <button class="tab-btn" onclick="showDataTab('invoices')">🧾 Invoices</button>
-                <button class="tab-btn" onclick="showDataTab('expenses')">💸 Expenses</button>
-            </div>
-
-            <div id="clientsData" class="clients-list"></div>
-            <div id="ordersData" class="orders-list" style="display: none;"></div>
-            <div id="invoicesData" class="clients-list" style="display: none;"></div>
-            <div id="expensesData" class="clients-list" style="display: none;"></div>
-
-            <div id="invoicePreview" class="invoice-preview" style="display: none;"></div>
-        </section>
-    </main>
 
     <script src="db.js"></script>
     <script src="script.js"></script>
     <script>
-        let currentSection = 'clients';
-        let currentDataTab = 'clients';
-        let selectedOrderClientId = null;
-        let selectedInvoiceClientId = null;
-        let currentInvoice = null;
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDashboardData();
+            updateStats();
+        });
 
-        function showSection(section) {
-            currentSection = section;
-            document.getElementById('clientFormSection').style.display = 'none';
-            document.getElementById('orderFormSection').style.display = 'none';
-            document.getElementById('invoiceFormSection').style.display = 'none';
-            document.getElementById('expenseFormSection').style.display = 'none';
+        function loadDashboardData() {
+            // Load clients, orders, and update the dashboard
+            const clients = getClientsFromDB();
+            const orders = getOrdersFromDB();
+            const invoices = getInvoicesFromDB();
+            const expenses = getExpensesFromDB();
             
-            document.getElementById(section + 'FormSection').style.display = 'block';
-            
-            const titles = {
-                'clients': '👥 Add New Client',
-                'orders': '📦 Create New Order', 
-                'invoices': '🧾 Create Invoice',
-                'expenses': '💸 Add Expense'
-            };
-            document.getElementById('formsTitle').textContent = titles[section];
-            
-            showDataTab(section);
-            
-            if (section === 'orders' || section === 'invoices') {
-                loadClientsForSelect();
-            }
+            updateStats(clients, orders, invoices, expenses);
+            updateRecentOrders(orders);
+            updateRecentActivity(clients, orders, invoices);
         }
 
-        function showDataTab(tab) {
-            currentDataTab = tab;
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
+        function updateStats(clients = [], orders = [], invoices = [], expenses = []) {
+            // Update client count
+            document.getElementById('totalClients').textContent = clients.length;
             
-            document.getElementById('clientsData').style.display = 'none';
-            document.getElementById('ordersData').style.display = 'none';
-            document.getElementById('invoicesData').style.display = 'none';
-            document.getElementById('expensesData').style.display = 'none';
+            // Update order stats
+            const activeOrders = orders.filter(order => order.status !== 'completed').length;
+            const received = orders.filter(order => order.status === 'received').length;
+            const inProcess = orders.filter(order => order.status === 'process').length;
+            const pending = orders.filter(order => order.status === 'pending').length;
+            const completed = orders.filter(order => order.status === 'completed').length;
             
-            document.getElementById(tab + 'Data').style.display = 'block';
+            document.getElementById('activeOrders').textContent = activeOrders;
+            document.getElementById('receivedOrders').textContent = received;
+            document.getElementById('processOrders').textContent = inProcess;
+            document.getElementById('pendingOrders').textContent = pending;
+            document.getElementById('completedOrders').textContent = completed;
             
-            const titles = {
-                'clients': '👥 Clients List',
-                'orders': '📦 Orders List',
-                'invoices': '🧾 Invoices List', 
-                'expenses': '💸 Expenses List'
-            };
-            document.getElementById('dataTitle').textContent = titles[tab];
+            // Update financial stats
+            const totalRevenue = invoices.reduce((sum, inv) => sum + inv.grandTotal, 0);
+            const totalExpenses = expenses.reduce((sum, exp) => sum + exp.amount, 0);
+            const netProfit = totalRevenue - totalExpenses;
+            const completionRate = orders.length > 0 ? Math.round((completed / orders.length) * 100) : 0;
             
-            loadData();
+            document.getElementById('totalRevenue').textContent = totalRevenue.toFixed(0);
+            document.getElementById('totalExpenses').textContent = totalExpenses.toFixed(0);
+            document.getElementById('netProfit').textContent = netProfit.toFixed(0);
+            document.getElementById('completionRate').textContent = completionRate + '%';
         }
 
-        function loadData() {
-            switch(currentDataTab) {
-                case 'clients': loadClientsData(); break;
-                case 'orders': loadOrdersData(); break;
-                case 'invoices': loadInvoicesData(); break;
-                case 'expenses': loadExpensesData(); break;
-            }
-        }
-
-        function searchOrderClients() {
-            const query = document.getElementById('orderClientSearch').value;
-            const results = searchClients(query);
-            const container = document.getElementById('orderClientResults');
-            showSearchResults(results, container, 'order');
-        }
-
-        function searchInvoiceClients() {
-            const query = document.getElementById('invoiceClientSearch').value;
-            const results = searchClients(query);
-            const container = document.getElementById('invoiceClientResults');
-            showSearchResults(results, container, 'invoice');
-        }
-
-        function showSearchResults(results, container, type) {
-            if (results.length === 0) {
-                container.innerHTML = '<div class="search-result-item">No clients found</div>';
-                container.style.display = 'block';
-                return;
-            }
-
-            container.innerHTML = results.slice(0, 5).map(client => `
-                <div class="search-result-item">
-                    <div class="client-search-info">
-                        <strong>${client.name}</strong>
-                        <div class="client-search-details">
-                            <span>📞 ${client.phone}</span>
-                            <span>📖 ${client.bookNo || 'No Book No'}</span>
+        function updateRecentOrders(orders = []) {
+            const container = document.getElementById('recentOrders');
+            const recent = orders.slice(0, 5);
+            
+            if (recent.length === 0) {
+                container.innerHTML = `
+                    <div class="activity-item">
+                        <span class="activity-icon">📦</span>
+                        <div class="activity-content">
+                            <div class="activity-title">No orders yet</div>
+                            <div class="activity-time">Create your first order</div>
                         </div>
                     </div>
-                    <button class="select-client-btn" onclick="select${type.charAt(0).toUpperCase() + type.slice(1)}Client('${client.id}')">
-                        Select
-                    </button>
+                `;
+                return;
+            }
+            
+            container.innerHTML = recent.map(order => `
+                <div class="activity-item">
+                    <span class="activity-icon">📦</span>
+                    <div class="activity-content">
+                        <div class="activity-title">${order.clientName} - ${order.orderNumber}</div>
+                        <div class="activity-time">${new Date(order.orderDate).toLocaleDateString()} • KWD ${order.price.toFixed(3)}</div>
+                    </div>
                 </div>
             `).join('');
+        }
+
+        function updateRecentActivity(clients = [], orders = [], invoices = []) {
+            const container = document.getElementById('recentActivity');
+            const activities = [];
             
-            container.style.display = 'block';
-        }
-
-        function selectOrderClient(clientId) {
-            const client = getClientById(clientId);
-            if (client) {
-                selectedOrderClientId = clientId;
-                document.getElementById('selectedOrderClientName').textContent = client.name;
-                document.getElementById('selectedOrderClientPhone').textContent = client.phone;
-                document.getElementById('selectedOrderClientBookNo').textContent = client.bookNo || 'N/A';
-                document.getElementById('selectedOrderClient').style.display = 'block';
-                document.getElementById('orderClientResults').style.display = 'none';
-                document.getElementById('orderClientSearch').value = client.name;
-            }
-        }
-
-        function selectInvoiceClient(clientId) {
-            const client = getClientById(clientId);
-            if (client) {
-                selectedInvoiceClientId = clientId;
-                document.getElementById('selectedInvoiceClientName').textContent = client.name;
-                document.getElementById('selectedInvoiceClientPhone').textContent = client.phone;
-                document.getElementById('selectedInvoiceClientBookNo').textContent = client.bookNo || 'N/A';
-                document.getElementById('selectedInvoiceClient').style.display = 'block';
-                document.getElementById('invoiceClientResults').style.display = 'none';
-                document.getElementById('invoiceClientSearch').value = client.name;
-            }
-        }
-
-        function addInvoiceItem() {
-            const container = document.getElementById('invoiceItems');
-            const itemDiv = document.createElement('div');
-            itemDiv.className = 'form-row';
-            itemDiv.style.gridTemplateColumns = '2fr 1fr 1fr auto';
-            itemDiv.style.alignItems = 'end';
-            itemDiv.style.gap = '10px';
-            itemDiv.style.marginBottom = '10px';
-            
-            itemDiv.innerHTML = `
-                <input type="text" placeholder="Item description" class="invoice-item-name" required>
-                <input type="number" placeholder="Qty" value="1" class="invoice-item-qty" min="1" required>
-                <input type="number" placeholder="Price (KWD)" class="invoice-item-price" step="0.001" min="0" required>
-                <button type="button" class="btn-danger" onclick="removeInvoiceItem(this)" style="padding: 8px 12px;">🗑️</button>
-            `;
-            
-            container.appendChild(itemDiv);
-        }
-
-        function removeInvoiceItem(button) {
-            if (document.querySelectorAll('#invoiceItems .form-row').length > 1) {
-                button.parentElement.remove();
-            }
-        }
-
-        function createInvoice() {
-            if (!selectedInvoiceClientId) {
-                showNotification('Please select a client', 'error');
-                return;
-            }
-
-            const client = getClientById(selectedInvoiceClientId);
-            const items = [];
-            let subtotal = 0;
-
-            document.querySelectorAll('#invoiceItems .form-row').forEach(row => {
-                const name = row.querySelector('.invoice-item-name').value;
-                const qty = parseFloat(row.querySelector('.invoice-item-qty').value) || 0;
-                const price = parseFloat(row.querySelector('.invoice-item-price').value) || 0;
-                
-                if (name && qty > 0 && price > 0) {
-                    const total = qty * price;
-                    items.push({ name, qty, price, total });
-                    subtotal += total;
-                }
+            // Add recent clients
+            clients.slice(0, 3).forEach(client => {
+                activities.push({
+                    type: 'client',
+                    icon: '👥',
+                    title: `New client: ${client.name}`,
+                    time: new Date(client.createdAt).toLocaleDateString()
+                });
             });
-
-            if (items.length === 0) {
-                showNotification('Please add at least one item', 'error');
+            
+            // Add recent orders
+            orders.slice(0, 3).forEach(order => {
+                activities.push({
+                    type: 'order',
+                    icon: '📦',
+                    title: `New order: ${order.orderNumber}`,
+                    time: new Date(order.orderDate).toLocaleDateString()
+                });
+            });
+            
+            // Add recent invoices
+            invoices.slice(0, 2).forEach(invoice => {
+                activities.push({
+                    type: 'invoice',
+                    icon: '🧾',
+                    title: `Invoice created: ${invoice.invoiceNumber}`,
+                    time: new Date(invoice.invoiceDate).toLocaleDateString()
+                });
+            });
+            
+            // Sort by time and take latest 5
+            activities.sort((a, b) => new Date(b.time) - new Date(a.time));
+            const recentActivities = activities.slice(0, 5);
+            
+            if (recentActivities.length === 0) {
+                container.innerHTML = `
+                    <div class="activity-item">
+                        <span class="activity-icon">👋</span>
+                        <div class="activity-content">
+                            <div class="activity-title">Welcome to your dashboard!</div>
+                            <div class="activity-time">Just now</div>
+                        </div>
+                    </div>
+                `;
                 return;
             }
+            
+            container.innerHTML = recentActivities.map(activity => `
+                <div class="activity-item">
+                    <span class="activity-icon">${activity.icon}</span>
+                    <div class="activity-content">
+                        <div class="activity-title">${activity.title}</div>
+                        <div class="activity-time">${activity.time}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
 
-            const discount = parseFloat(document.getElementById('invoiceDiscount').value) || 0;
-            const tax = parseFloat(document.getElementById('invoiceTax').value) || 0;
-            const grandTotal = subtotal - discount + tax;
-
-            const invoice = {
+        // Client Management
+        function saveClient() {
+            const clientData = {
                 id: generateId(),
-                invoiceNumber: generateInvoiceNumber(),
-                clientId: selectedInvoiceClientId,
-                clientName: client.name,
-                clientPhone: client.phone,
-                clientBookNo: client.bookNo,
-                items: items,
-                subtotal: subtotal,
-                discount: discount,
-                tax: tax,
-                grandTotal: grandTotal,
-                invoiceDate: new Date().toISOString(),
-                status: 'unpaid'
+                name: document.getElementById('clientName').value.trim(),
+                phone: document.getElementById('clientPhone').value.trim(),
+                bookNo: document.getElementById('clientBookNo').value.trim(),
+                measurements: {},
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
             };
 
-            saveInvoiceToDB(invoice);
-            showInvoicePreview(invoice);
-            showNotification('Invoice created successfully!');
-        }
-
-        function showInvoicePreview(invoice) {
-            currentInvoice = invoice;
-            const container = document.getElementById('invoicePreview');
-            
-            container.innerHTML = `
-                <div class="invoice-header">
-                    <h2>JAMAL AL-SHUWAIKH</h2>
-                    <p class="shop-arabic">جمال الشويخ للرجال وفنستها</p>
-                    <p class="shop-subtitle">MEN TAILOR & TEXTILE</p>
-                    <div class="invoice-number">Invoice: ${invoice.invoiceNumber}</div>
-                </div>
-
-                <div class="invoice-details">
-                    <div class="invoice-section">
-                        <h3>Bill To:</h3>
-                        <p><strong>${invoice.clientName}</strong></p>
-                        <p>📞 ${invoice.clientPhone}</p>
-                        <p>📖 Book No: ${invoice.clientBookNo || 'N/A'}</p>
-                    </div>
-                    <div class="invoice-section">
-                        <h3>Invoice Details:</h3>
-                        <p><strong>Date:</strong> ${new Date(invoice.invoiceDate).toLocaleDateString()}</p>
-                        <p><strong>Status:</strong> ${invoice.status.toUpperCase()}</p>
-                    </div>
-                </div>
-
-                <div class="invoice-items">
-                    <table class="items-table">
-                        <thead>
-                            <tr>
-                                <th>Description</th>
-                                <th>Qty</th>
-                                <th>Price (KWD)</th>
-                                <th>Total (KWD)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            ${invoice.items.map(item => `
-                                <tr>
-                                    <td>${item.name}</td>
-                                    <td>${item.qty}</td>
-                                    <td>${item.price.toFixed(3)}</td>
-                                    <td>${item.total.toFixed(3)}</td>
-                                </tr>
-                            `).join('')}
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="invoice-totals">
-                    <div class="total-row">
-                        <span>Subtotal:</span>
-                        <span>KWD ${invoice.subtotal.toFixed(3)}</span>
-                    </div>
-                    <div class="total-row">
-                        <span>Discount:</span>
-                        <span>KWD ${invoice.discount.toFixed(3)}</span>
-                    </div>
-                    <div class="total-row">
-                        <span>Tax:</span>
-                        <span>KWD ${invoice.tax.toFixed(3)}</span>
-                    </div>
-                    <div class="total-row">
-                        <span><strong>Grand Total:</strong></span>
-                        <span><strong>KWD ${invoice.grandTotal.toFixed(3)}</strong></span>
-                    </div>
-                </div>
-
-                <div class="qr-container" id="qrCodeContainer">
-                    <h3>QR Code for Payment</h3>
-                    <div class="qr-code" id="qrCode"></div>
-                </div>
-
-                <div class="invoice-actions">
-                    <button class="action-btn-large btn-whatsapp" onclick="shareInvoiceWhatsApp()">
-                        📱 Share via WhatsApp
-                    </button>
-                    <button class="action-btn-large btn-pdf" onclick="generateInvoicePDF()">
-                        📄 Download PDF
-                    </button>
-                    <button class="action-btn-large btn-print" onclick="printInvoice()">
-                        🖨️ Print Invoice
-                    </button>
-                    <button class="action-btn-large btn-qr" onclick="generateQRCode()">
-                        🔳 Generate QR Code
-                    </button>
-                </div>
-            `;
-
-            container.style.display = 'block';
-            generateQRCode();
-        }
-
-        function generateQRCode() {
-            if (!currentInvoice) return;
-            
-            const qrContainer = document.getElementById('qrCode');
-            const qrData = `JAMAL AL-SHUWAIKH\nInvoice: ${currentInvoice.invoiceNumber}\nClient: ${currentInvoice.clientName}\nAmount: KWD ${currentInvoice.grandTotal.toFixed(3)}\nDate: ${new Date(currentInvoice.invoiceDate).toLocaleDateString()}\nPhone: 97686004`;
-            
-            QRCode.toCanvas(qrContainer, qrData, { width: 200 }, function(error) {
-                if (error) console.error('QR Code generation error:', error);
-            });
-        }
-
-        function generateInvoicePDF() {
-            if (!currentInvoice) return;
-            
-            const element = document.getElementById('invoicePreview');
-            const opt = {
-                margin: 10,
-                filename: `invoice-${currentInvoice.invoiceNumber}.pdf`,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2 },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-
-            const button = event.target;
-            const originalText = button.innerHTML;
-            button.innerHTML = '<span class="loading-spinner"></span> Generating PDF...';
-            button.disabled = true;
-
-            html2pdf().set(opt).from(element).save().then(() => {
-                button.innerHTML = originalText;
-                button.disabled = false;
-                showNotification('PDF downloaded successfully!');
-            });
-        }
-
-        function printInvoice() {
-            const element = document.getElementById('invoicePreview');
-            const originalContents = document.body.innerHTML;
-            
-            document.body.innerHTML = element.innerHTML;
-            window.print();
-            document.body.innerHTML = originalContents;
-            location.reload();
-        }
-
-        function shareInvoiceWhatsApp() {
-            if (!currentInvoice) return;
-            
-            let message = `*JAMAL AL-SHUWAIKH* 👕\n`;
-            message += `جمال الشويخ للرجال وفنستها\n\n`;
-            message += `*INVOICE* 🧾\n`;
-            message += `Invoice No: ${currentInvoice.invoiceNumber}\n`;
-            message += `Client: ${currentInvoice.clientName}\n`;
-            message += `Phone: ${currentInvoice.clientPhone}\n`;
-            message += `Date: ${new Date(currentInvoice.invoiceDate).toLocaleDateString()}\n\n`;
-            message += `*ITEMS:*\n`;
-            
-            currentInvoice.items.forEach((item, index) => {
-                message += `${index + 1}. ${item.name} - ${item.qty} x KWD ${item.price.toFixed(3)} = KWD ${item.total.toFixed(3)}\n`;
-            });
-            
-            message += `\nSubtotal: KWD ${currentInvoice.subtotal.toFixed(3)}\n`;
-            message += `Discount: KWD ${currentInvoice.discount.toFixed(3)}\n`;
-            message += `Tax: KWD ${currentInvoice.tax.toFixed(3)}\n`;
-            message += `*GRAND TOTAL: KWD ${currentInvoice.grandTotal.toFixed(3)}*\n\n`;
-            message += `*Thank you for your business!* 🙏\n`;
-            message += `📞 97686004\n`;
-            message += `📍 Kuwait – Comm. Area No. 9 – Mariam Comp – Basement – Shop No. 8`;
-
-            const encodedMessage = encodeURIComponent(message);
-            const whatsappUrl = `https://wa.me/${currentInvoice.clientPhone}?text=${encodedMessage}`;
-            
-            window.open(whatsappUrl, '_blank');
-        }
-
-        function searchData() {
-            loadData();
-        }
-
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.search-container')) {
-                document.getElementById('orderClientResults').style.display = 'none';
-                document.getElementById('invoiceClientResults').style.display = 'none';
+            if (!clientData.name || !clientData.phone || !clientData.bookNo) {
+                showNotification('Please fill in all required fields', 'error');
+                return;
             }
-        });
 
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('orderDate').valueAsDate = new Date();
-            document.getElementById('expenseDate').valueAsDate = new Date();
-            loadClientsData();
-            addInvoiceItem();
-        });
+            const success = saveClientToDB(clientData);
+            if (success) {
+                document.getElementById('clientForm').reset();
+                loadDashboardData();
+                showNotification('Client saved successfully!');
+            } else {
+                showNotification('Error saving client', 'error');
+            }
+        }
+
+        // Order Management Functions
+        function createNewOrder() {
+            showNotification('Redirecting to order creation...', 'info');
+            // In a full implementation, this would open an order modal
+        }
+
+        function showAllOrders() {
+            showNotification('Showing all orders...', 'info');
+        }
+
+        function showPendingOrders() {
+            showNotification('Showing pending orders...', 'info');
+        }
+
+        function showCompletedOrders() {
+            showNotification('Showing completed orders...', 'info');
+        }
+
+        // Business Management Functions
+        function createInvoice() {
+            showNotification('Opening invoice creator...', 'info');
+        }
+
+        function manageEmployees() {
+            showNotification('Opening employee management...', 'info');
+        }
+
+        function manageSalary() {
+            showNotification('Opening salary management...', 'info');
+        }
+
+        function manageExpenses() {
+            showNotification('Opening expense management...', 'info');
+        }
+
+        function generateReport() {
+            showNotification('Generating business report...', 'info');
+        }
+
+        function backupData() {
+            downloadBackup();
+        }
+
+        // Utility Functions
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.textContent = message;
+            notification.style.background = type === 'error' ? 'var(--danger)' : 
+                                          type === 'success' ? 'var(--accent)' : 'var(--primary)';
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Auto-refresh dashboard every 30 seconds
+        setInterval(loadDashboardData, 30000);
     </script>
 </body>
 </html>
